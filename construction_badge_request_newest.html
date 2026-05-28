@@ -126,26 +126,8 @@
             <label>Owner</label>
             <input type="text" name="owner" value="Alnylam Pharmaceuticals" readonly/>
           </div>
-          <div class="field">
-            <label>Project Phase <span class="required-star">*</span></label>
-            <select name="project_phase" required>
-              <option value="">Select phase…</option>
-              <option value="Enabling">Enabling</option>
-              <option value="Base - Phase 1">Base - Phase 1</option>
-              <option value="Base - Phase 2">Base - Phase 2</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
-      <!-- PRIORITY -->
-      <div class="section">
-        <div class="section-label">Request Priority</div>
-        <div class="priority-row">
-          <button type="button" class="priority-btn active-std" data-p="standard" onclick="setPriority('standard')">Standard</button>
-          <button type="button" class="priority-btn" data-p="urgent" onclick="setPriority('urgent')">Urgent</button>
         </div>
-        <input type="hidden" name="priority" id="priority-value" value="Standard"/>
       </div>
 
       <!-- PERSONAL INFO -->
@@ -173,8 +155,8 @@
             <input type="tel" name="mobile" placeholder="+1 (617) 000-0000" required/>
           </div>
           <div class="field">
-            <label>Work Email</label>
-            <input type="email" name="applicant_email" placeholder="name@company.com"/>
+            <label>Work Email <span class="required-star">*</span></label>
+            <input type="email" name="applicant_email" placeholder="name@company.com" required/>
           </div>
         </div>
       </div>
@@ -185,7 +167,7 @@
         <div class="field-grid cols-2">
           <div class="field">
             <label>Trade <span class="required-star">*</span></label>
-            <select name="trade" required>
+            <select name="trade" id="trade-select" required onchange="toggleOtherTrade(this)">
               <option value="">Select trade…</option>
               <option>Automation</option>
               <option>Carpenter</option>
@@ -216,58 +198,15 @@
               <option>Other</option>
             </select>
           </div>
+          <div class="field" id="trade-other-field" style="display:none;grid-column:span 2;">
+            <label>Please specify trade <span class="required-star">*</span></label>
+            <input type="text" name="trade_other" id="trade-other-input" placeholder="Enter your trade…"/>
+          </div>
           <div class="field">
             <label>Access Start Date <span class="required-star">*</span></label>
             <input type="date" name="access_start" required/>
           </div>
-          <div class="field">
-            <label>Access End Date</label>
-            <input type="date" name="access_end"/>
-          </div>
         </div>
-
-        <div style="margin-top: 12px;">
-          <label style="display:block; font-family: Arial, sans-serif; font-size: 10.5px; font-weight: 700; color: #555; margin-bottom: 10px; letter-spacing: 0.4px; text-transform: uppercase;">Access Zones Required</label>
-          <div class="zone-grid">
-            <label class="checkbox-row"><input type="checkbox" name="zone_p1" value="Yes"/><div class="checkbox-label"><strong>P1</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_p2" value="Yes"/><div class="checkbox-label"><strong>P2</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_l1" value="Yes"/><div class="checkbox-label"><strong>Level 1</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_l2" value="Yes"/><div class="checkbox-label"><strong>Level 2</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_l3" value="Yes"/><div class="checkbox-label"><strong>Level 3</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_l4" value="Yes"/><div class="checkbox-label"><strong>Level 4</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_roof" value="Yes"/><div class="checkbox-label"><strong>Roof</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_loading" value="Yes"/><div class="checkbox-label"><strong>Loading Dock</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_cc" value="Yes"/><div class="checkbox-label"><strong>Construction Clearance</strong></div></label>
-            <label class="checkbox-row"><input type="checkbox" name="zone_ccc" value="Yes"/><div class="checkbox-label"><strong>CCC Access</strong></div></label>
-          </div>
-        </div>
-      </div>
-
-      <!-- SUPERVISOR -->
-      <div class="section">
-        <div class="section-label">Supervisor</div>
-        <div class="field-grid cols-2">
-          <div class="field">
-            <label>Supervisor Name <span class="required-star">*</span></label>
-            <input type="text" name="supervisor_name" placeholder="Full name" required/>
-          </div>
-          <div class="field">
-            <label>Supervisor Phone <span class="required-star">*</span></label>
-            <input type="tel" name="supervisor_phone" placeholder="+1 (617) 000-0000" required/>
-          </div>
-          <div class="field" style="grid-column: span 2;">
-            <label>Supervisor Email</label>
-            <input type="email" name="supervisor_email" placeholder="supervisor@company.com"/>
-          </div>
-        </div>
-      </div>
-
-      <!-- NOTES -->
-      <div class="section">
-        <div class="section-label">Additional Notes</div>
-        <div class="field">
-          <label>Special access requirements or comments</label>
-          <textarea name="notes" placeholder="e.g. Requires Level 3 access for mechanical commissioning week of May 12…"></textarea>
         </div>
       </div>
 
@@ -279,6 +218,8 @@
           <div class="agree-text">
             <strong>I acknowledge and agree to the following site access terms <span class="required-star">*</span></strong>
             I confirm that all information provided on this form is accurate and complete. I understand and agree that:
+            only foremen will be receiving a site access badge and are responsible for getting their crews access into the building;
+            foremen are responsible for ensuring their crews sign-in and receive a wristband daily;
             the site access badge issued to me is strictly personal and non-transferable;
             the badge cannot be given to, shared with, or used by any other person under any circumstances;
             the badge will be issued solely to the individual named on this request and no one else is permitted to use it to access any area of the site;
@@ -317,6 +258,19 @@
 </div>
 
 <script>
+  function toggleOtherTrade(sel) {
+    var field = document.getElementById('trade-other-field');
+    var input = document.getElementById('trade-other-input');
+    if (sel.value === 'Other') {
+      field.style.display = 'block';
+      input.required = true;
+    } else {
+      field.style.display = 'none';
+      input.required = false;
+      input.value = '';
+    }
+  }
+
   var FORMSPREE_ENDPOINT = "https://formspree.io/f/xjglwllz";
 
   var formNum = Math.floor(100000 + Math.random() * 900000);
